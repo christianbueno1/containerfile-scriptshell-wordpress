@@ -7,7 +7,8 @@ set -e   #exit on most errors
 wordpress_image=${1:-christianbueno1/wordpress:603-php80-8080}
 pod_name=${2:-site}
 database_image=${3:-mariadb:10.7.6-focal}
-port_number=${4:-8080}
+wordpress_port=${4:-8080}
+mariadb_port=${5:-3306}
 user=chris
 #password=maGazine1!ec
 password=Ecuadormipais1_
@@ -21,7 +22,7 @@ wordpress_container_name=wordpress-${pod_name}
 ##
 
 echo "Creating the pod"
-podman pod create --name ${pod_name} --infra --publish ${port_number}:${port_number} --publish 3306:3306 --network bridge
+podman pod create --name ${pod_name} --infra --publish ${wordpress_port}:${wordpress_port} --publish ${mariadb_port}:${mariadb_port} --network bridge
 
 echo "Creating the mariadb container"
 podman run --pod ${pod_name} --name ${database_container_name} \
@@ -45,9 +46,10 @@ podman run --pod ${pod_name} --name ${wordpress_container_name} \
 #
 #run the script
 #
-#./createsite.sh <wordpress_image> <pod_name> <database_image> <port>
-#./createsite.sh wordpress:611-php80-apache-8080 site mariadb:10.6.11-focal 8080
-#./createsite.sh christianbueno1/wordpress:602-8080 podman-blog
+#./createsite.sh <wordpress_image> <pod_name> <database_image> <wordpress_port> <mariadb_port>
+#./createsite.sh wordpress:611-php80-apache-8080 site mariadb:10.6.11-focal 8080 3306
+#use default values last 3 parameters
+#./createsite.sh christianbueno1/wordpress:602-8080 blog
 #use the default wordpress_image=christianbueno1/wordpress:603-php80-8080 in the first argument and empty for the next 2 parameters.
 #./createsite.sh "" podman-blog
 #use the default wordpress_image, pod_name, database_image, port arguments
